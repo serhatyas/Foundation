@@ -38,6 +38,19 @@ namespace App.Services
             return ServiceResult<List<ProductsDto>>.Success(productsAsDto);
         }
 
+        public async Task<ServiceResult<List<ProductsDto>>> GetPagedAllListAsync(int pageNumber, int pageSize)
+        {
+            // 1 - 20 => ilk 10 kayıt skip(0).Take(10
+            // 2 - 10 => 11 - 20 kayıt skip(10).Take(10)
+
+            var products = await productRepository.GetAll()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            var productsAsDto = products.Select(x => new ProductsDto(x.Id, x.Name, x.Price, x.Stock)).ToList();
+            return ServiceResult<List<ProductsDto>>.Success(productsAsDto);
+        }
+
         //fail olduğunda ProductsDto boş olabilir 
         public async Task<ServiceResult<ProductsDto?>> GetByIdAsync(int id)
         {
