@@ -1,6 +1,7 @@
 ﻿using App.Repositories;
 using App.Repositories.Products;
 using App.Services.Products;
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -15,7 +16,7 @@ namespace App.Services
     //services.AddScoped<IProductRepository, ProductRepository2>(); 
     //burada sadece DI kaydını değiştirerek esneklik sağlamış olduk.
     //business logic katmanında repository ile iş yapıyoruz
-    public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork) :IProductService
+    public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork) : IProductService
     {
         public async Task<ServiceResult<List<ProductsDto>>> GetTopPriceProductAsync(int count)
         {
@@ -76,7 +77,7 @@ namespace App.Services
             };
             await productRepository.AddAsync(product);
             await unitOfWork.SaveChangesAsync();
-            return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
+            return ServiceResult<CreateProductResponse>.SuccessAsCreated(new CreateProductResponse(product.Id), $"api/products/{product.Id}");
         }
 
         public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
@@ -101,6 +102,22 @@ namespace App.Services
             return ServiceResult.Success(HttpStatusCode.NoContent);
         }
 
+
+        //parametre ikiden fazla olunca recorda çevirmek daha mantıklı
+        public async Task<ServiceResult> UpdateStockAsync(UpdateProductStockRequest request)
+        {
+            var product = await productRepository.GetByIdAsync(request.ProductId);
+            if (product is null)
+            {
+                return ServiceResult.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
+            }
+
+            product.Stock = request.Quantity;   
+            productRepository.Update(product);
+            await unitOfWork.SaveChangesAsync();
+            return ServiceResult.Success(HttpStatusCode.NoContent);
+        }
+
         public async Task<ServiceResult> DeleteAsync(int id)
         {
             var product = await productRepository.GetByIdAsync(id);
@@ -112,5 +129,6 @@ namespace App.Services
             await unitOfWork.SaveChangesAsync();
             return ServiceResult.Success(HttpStatusCode.NoContent);
         }
+
     }
 }
