@@ -3,7 +3,7 @@
     //karşılaştırma yaptığım zaman propertylerine göre karşılaştırma yapacağımız için record yaptık
     //record otomatikman oluşturuyor
 
-    public record ProductsDto(int Id, string Name, decimal Price, int Stock);
+    public record ProductDto(int Id, string Name, decimal Price, int Stock);
 
     //public record ProductsDto
     //{

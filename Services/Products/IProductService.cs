@@ -1,4 +1,6 @@
 ﻿using App.Services.Products;
+using App.Services.Products.Create;
+using App.Services.Products.Update;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +11,10 @@ namespace App.Services
 {
     public interface IProductService
     {
-        Task<ServiceResult<List<ProductsDto>>> GetTopPriceProductAsync(int count);
-        Task<ServiceResult<ProductsDto?>> GetByIdAsync(int id);
-        Task<ServiceResult<List<ProductsDto>>> GetAllListAsync();
-        Task<ServiceResult<List<ProductsDto>>> GetPagedAllListAsync(int pageNumber, int pageSize);
+        Task<ServiceResult<List<ProductDto>>> GetTopPriceProductAsync(int count);
+        Task<ServiceResult<ProductDto?>> GetByIdAsync(int id);
+        Task<ServiceResult<List<ProductDto>>> GetAllListAsync();
+        Task<ServiceResult<List<ProductDto>>> GetPagedAllListAsync(int pageNumber, int pageSize);
         Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request);
         Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request);
         Task<ServiceResult> UpdateStockAsync(UpdateProductStockRequest request);

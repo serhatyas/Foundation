@@ -19,7 +19,7 @@ namespace App.API.Controllers
 
             if (result.StatusCode == HttpStatusCode.Created)
             {
-                return Created(result.UrlAsCreated, result.Data);
+                return Created(result.UrlAsCreated, result);
             }
 
 
