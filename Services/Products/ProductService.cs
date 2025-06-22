@@ -1,5 +1,6 @@
 ﻿using App.Repositories;
 using App.Repositories.Products;
+using App.Services.ExceptionHandlers;
 using App.Services.Products;
 using App.Services.Products.Create;
 using App.Services.Products.Update;
@@ -83,6 +84,10 @@ namespace App.Services
         public async Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request)
         {
 
+            //throw new CriticalException("kritik hata");
+
+            throw new Exception("db hatası");
+
             var anyProduct = await productRepository.Where(x => x.Name == request.Name).AnyAsync();
             if (anyProduct)
             {
@@ -149,8 +154,5 @@ namespace App.Services
             await unitOfWork.SaveChangesAsync();
             return ServiceResult.Success(HttpStatusCode.NoContent);
         }
-
-
-
     }
 }

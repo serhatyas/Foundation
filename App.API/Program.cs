@@ -1,9 +1,7 @@
-using App.Repositories;
 using App.Repositories.Extension;
 using App.Services;
 using App.Services.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +20,8 @@ builder.Services.AddRepositories(builder.Configuration).AddServices(builder.Conf
 
 
 var app = builder.Build();
+
+app.UseExceptionHandler(x => { });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
