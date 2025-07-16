@@ -4,6 +4,7 @@ using App.Services.ExceptionHandlers;
 using App.Services.Products;
 using App.Services.Products.Create;
 using App.Services.Products.Update;
+using App.Services.Products.UpdateStock;
 using AutoMapper;
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,9 @@ namespace App.Services
         {
             var products = await productRepository.GetTopPriceProductAsync(count);
 
-            var productsAsDto = products.Select(x => new ProductDto(x.Id, x.Name, x.Price, x.Stock)).ToList();
+            //var productsAsDto = products.Select(x => new ProductDto(x.Id, x.Name, x.Price, x.Stock)).ToList();
+
+            var productsAsDto = mapper.Map<List<ProductDto>>(products);
 
             return new ServiceResult<List<ProductDto>>()
             {
@@ -86,7 +89,7 @@ namespace App.Services
 
             //throw new CriticalException("kritik hata");
 
-            throw new Exception("db hatası");
+            //throw new Exception("db hatası");
 
             var anyProduct = await productRepository.Where(x => x.Name == request.Name).AnyAsync();
             if (anyProduct)
@@ -94,12 +97,15 @@ namespace App.Services
                 return ServiceResult<CreateProductResponse>.Fail("Ürün ismi veritabanında bulunmaktadır", System.Net.HttpStatusCode.BadRequest);
             }
 
-            var product = new Product()
-            {
-                Name = request.Name,
-                Price = request.Price,
-                Stock = request.Stock
-            };
+            //var product = new Product()
+            //{
+            //    Name = request.Name,
+            //    Price = request.Price,
+            //    Stock = request.Stock
+            //};
+
+            var product = mapper.Map<Product>(request);
+
             await productRepository.AddAsync(product);
             await unitOfWork.SaveChangesAsync();
             return ServiceResult<CreateProductResponse>.SuccessAsCreated(new CreateProductResponse(product.Id), $"api/products/{product.Id}");
@@ -117,9 +123,19 @@ namespace App.Services
             {
                 return ServiceResult.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
             }
-            product.Name = request.Name;
-            product.Price = request.Price;
-            product.Stock = request.Stock;
+
+            var anyProduct = await productRepository.Where(x => x.Name == request.Name && x.Id != product.Id).AnyAsync();
+
+            if (anyProduct)
+            {
+                return ServiceResult.Fail("Ürün ismi veritabanında bulunmaktadır", System.Net.HttpStatusCode.BadRequest);
+            }
+
+            //product.Name = request.Name;
+            //product.Price = request.Price;
+            //product.Stock = request.Stock;
+
+            product = mapper.Map(request, product);
 
             productRepository.Update(product);
             await unitOfWork.SaveChangesAsync();
@@ -154,5 +170,6 @@ namespace App.Services
             await unitOfWork.SaveChangesAsync();
             return ServiceResult.Success(HttpStatusCode.NoContent);
         }
+        
     }
 }

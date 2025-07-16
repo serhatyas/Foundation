@@ -1,4 +1,5 @@
-﻿using App.Repositories.Products;
+﻿using App.Repositories.Categories;
+using App.Repositories.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ namespace App.Repositories.Extension
                 });
             });
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             //IGenericRepository<> birden fazla generic alsaydı IGenericRepository<,,> araya virgül koyacaktık
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();

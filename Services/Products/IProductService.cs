@@ -1,6 +1,7 @@
 ﻿using App.Services.Products;
 using App.Services.Products.Create;
 using App.Services.Products.Update;
+using App.Services.Products.UpdateStock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
